@@ -304,15 +304,27 @@ public class CameraFragment extends BaseCameraFragment implements View.OnClickLi
   }
 
   private void createPreview() {
-    Activity activity = getActivity();
-    if (activity == null) return;
-    if (mWindowSize == null) mWindowSize = new Point();
-    activity.getWindowManager().getDefaultDisplay().getSize(mWindowSize);
+//    Activity activity = getActivity();
+//    if (activity == null) return;
+//    if (mWindowSize == null) mWindowSize = new Point();
+//    activity.getWindowManager().getDefaultDisplay().getSize(mWindowSize);
     mPreviewView = new CameraPreview(getActivity(), mCamera);
     if (mPreviewFrame.getChildCount() > 0 && mPreviewFrame.getChildAt(0) instanceof CameraPreview)
       mPreviewFrame.removeViewAt(0);
     mPreviewFrame.addView(mPreviewView, 0);
-    mPreviewView.setAspectRatio(mWindowSize.x, mWindowSize.y);
+//    mPreviewView.setAspectRatio(mWindowSize.x, mWindowSize.y);
+
+    // Find the camera's preview size and current rotation
+    Camera.Size previewSize = mCamera.getParameters().getPreviewSize();
+    int aspectWidth = previewSize.width;
+    int aspectHeight = previewSize.height;
+    // If the rotation is 90 or 270, flip the aspect ratio values
+    int rotation = Integer.parseInt(mCamera.getParameters().get("rotation"));
+    if (rotation == Degrees.DEGREES_90 || rotation == Degrees.DEGREES_270) {
+      aspectWidth = previewSize.height;
+      aspectHeight = previewSize.width;
+    }
+    mPreviewView.setAspectRatio(aspectWidth, aspectHeight);
   }
 
   @Override
